@@ -69,7 +69,7 @@ bluebird.map(files, (file) => {
 }).then(() => {
     console.log('Finished after ', new Date() - start, 'ms');
 }).catch((err) => {
-    console.log(err);
+    //console.log(Object.keys(err));
     if (err.response) {
         console.log(err.response.status, err.response.statusText, err.response.data);
     }

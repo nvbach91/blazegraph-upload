@@ -21,7 +21,6 @@ console.log(password);
 const options = { 
     headers: { 
         'Accept': '*/*',
-        'Content-Type': 'text/plain',
         'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
     }
 };
@@ -31,20 +30,7 @@ bluebird.each(namespaces.split(','), (namespace) => {
     if (!ns) {
         return bluebird.delay(0);
     }
-    const payload = `
-        com.bigdata.rdf.store.AbstractTripleStore.textIndex=false
-        com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms
-        com.bigdata.rdf.sail.isolatableIndices=false
-        com.bigdata.rdf.sail.truthMaintenance=false
-        com.bigdata.rdf.store.AbstractTripleStore.justify=false
-        com.bigdata.rdf.sail.namespace=${ns}
-        com.bigdata.rdf.store.AbstractTripleStore.quads=false
-        com.bigdata.namespace.${ns}.spo.com.bigdata.btree.BTree.branchingFactor=1024
-        com.bigdata.namespace.${ns}.lex.com.bigdata.btree.BTree.branchingFactor=400
-        com.bigdata.rdf.store.AbstractTripleStore.geoSpatial=false
-        com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers=false
-    `;
-    return axios.post(`${host}${path}/namespace`, payload, options).then((resp) => {
+    return axios.delete(`${host}${path}/namespace/${ns}`, options).then((resp) => {
         console.log(resp.data);
     });
 }).catch((err) => {
