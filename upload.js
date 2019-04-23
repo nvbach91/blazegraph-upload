@@ -5,7 +5,7 @@ const argv = require('yargs').argv;
 
 let directory = argv.directory || '';
 const host = argv.host || 'http://localhost:8080';
-const path = '/boss-blazegraph-s/v1';
+const path = argv.path || '/boss-blazegraph-s/v1';
 const namespace = argv.namespace || 'kb';
 const username = argv.username || 'admin';
 const password = argv.password || 'pw123';
