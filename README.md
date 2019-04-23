@@ -3,7 +3,7 @@ Use this script to bulk upload RDF files to Blazegraph
 
 ## Usage
 ```bash
-$> node create-namespace.js --namespaces=bisnode-develop,bisnode-master
+$> node create-namespace.js --namespaces=ns1,ns2,ns3
 ```
 - `--namespaces` - name name of the namespaces to be created
 
