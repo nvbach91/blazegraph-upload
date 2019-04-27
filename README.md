@@ -3,9 +3,10 @@ Use this script to bulk upload RDF files to Blazegraph
 
 ## Usage
 ```bash
+$> node delete-namespace.js --namespaces=ns1,ns2,ns3
 $> node create-namespace.js --namespaces=ns1,ns2,ns3
 ```
-- `--namespaces` - name name of the namespaces to be created
+- `--namespaces` - name name of the namespaces to be deleted/created
 
 ```bash
 $> node upload.js --directory=C:/path/to/rdf/files \
