@@ -10,7 +10,7 @@ if (!namespaces) {
     process.exit();
 }
 const username = argv.username || 'admin';
-const password = argv.password || 'pw123';
+const password = argv.password || 'admin';
 
 console.log(host);
 console.log(path);

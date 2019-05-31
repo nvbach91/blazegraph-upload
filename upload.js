@@ -8,7 +8,7 @@ const host = argv.host || 'http://localhost:8080';
 const path = argv.path || '/blazegraph';
 const namespace = argv.namespace || 'kb';
 const username = argv.username || 'admin';
-const password = argv.password || 'pw123';
+const password = argv.password || 'admin';
 
 console.log(directory);
 console.log(host);

@@ -14,11 +14,11 @@ $> node upload.js --directory=C:/path/to/rdf/files \
     [--path=/blazegraph] \
     [--namespace=kb] \
     [--username=admin] \
-    [--password=pw123]
+    [--password=admin]
 ```
 - `--directory` - path to the folder containing RDF files, mandatory
 - `--host` - where is blazegraph running at - default is `http://localhost:8080`
 - `--path` - where is blazegraph running at - default is `/blazegraph`
 - `--namespace` - the namespace for these data - default is `kb`
 - `--username` - authorization username - default is `admin`
-- `--password` - authorization password - default is `pw123`
+- `--password` - authorization password - default is `admin`
