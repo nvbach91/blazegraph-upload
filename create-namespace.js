@@ -3,7 +3,7 @@ const bluebird = require('bluebird');
 const argv = require('yargs').argv;
 
 const host = argv.host || 'http://localhost:8080';
-const path = argv.path || '/boss-blazegraph-s/v1';
+const path = argv.path || '/blazegraph';
 const namespaces = argv.namespaces;
 if (!namespaces) {
     console.log('Please specify a namespace(s). E.g.: ns1, ns2');
