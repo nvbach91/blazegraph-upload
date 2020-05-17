@@ -1,24 +1,65 @@
 # Blazegraph upload
-Use this script to bulk upload RDF files to Blazegraph
+Use these node.js scripts to bulk upload RDF files to Blazegraph
 
-## Usage
-```bash
-$> node delete-namespace.js --namespaces=ns1,ns2,ns3
-$> node create-namespace.js --namespaces=ns1,ns2,ns3
-```
-- `--namespaces` - name name of the namespaces to be deleted/created
 
+## Usage for namespaces.js
+This is used to create/delete a namespace(s) in Blazegraph
+
+1. Provide upload information, e.g. `host`, `path`, `username`, `password` in the `uploadConfig.json` file
+    ```js
+    {
+        "host": "http://localhost:8080",    // the web server that your blazegraph is running on
+        "path": "/blazegraph",              // the URL path that points to the blazegraph instance
+        "username": "",                     // optional basic authentication username
+        "password": ""                      // optional basic authentication password
+    }
+    ```
 ```bash
-$> node upload.js --directory=C:/path/to/rdf/files \
-    [--host=http://localhost:8080] \
-    [--path=/blazegraph] \
-    [--namespace=kb] \
-    [--username=admin] \
-    [--password=admin]
+$> node namespaces.js --operation=create --namespaces=ns1,ns2,ns3 --mode=triples
+$> node namespaces.js --operation=delete --namespaces=ns1,ns2,ns3
 ```
-- `--directory` - path to the folder containing RDF files, mandatory
-- `--host` - where is blazegraph running at - default is `http://localhost:8080`
-- `--path` - where is blazegraph running at - default is `/blazegraph`
-- `--namespace` - the namespace for these data - default is `kb`
-- `--username` - authorization username - default is `admin`
-- `--password` - authorization password - default is `admin`
+- `--operation` - either `create` or `delete`
+- `--namespaces` - the namespaces to be created/deleted
+- `--mode` - the storage mode, either `triples` or `quads`
+
+
+## Usage for stream-quad-upload.js
+This is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode. It converts the source files to a quad stream, automatically detects and inserts the ontology IRI as the 4th value to the quads.
+
+1. Create a namespace in Blazegraph workbench or using `create-namespace.js`, make sure to choose `quads` mode
+1. Provide the paths of your source files to the `files.json` file
+1. Provide upload information, e.g. `host`, `path`, `namespace`, `username`, `password` in the `uploadConfig.json` file
+    ```js
+    {
+        "host": "http://localhost:8080",    // the web server that your blazegraph is running on
+        "path": "/blazegraph",              // the URL path that points to the blazegraph instance
+        "namespace": "kb",                  // the target namespace you created at step 1)
+        "username": "",                     // optional basic authentication username
+        "password": ""                      // optional basic authentication password
+    }
+    ```
+1. Run in shell: 
+    ```shell
+    $> node stream-quad-upload.js
+    ```
+
+
+## Usage for upload.js
+This is used to upload RDF files one by one to a Blazegraph instance in triples mode.
+
+1. Create a namespace in Blazegraph workbench or using `create-namespace.js`, make sure to choose `triples` mode
+1. Provide the paths of your source files to the `files.json` file
+1. Provide upload information, e.g. `host`, `path`, `namespace`, `username`, `password` in the `uploadConfig.json` file
+    ```js
+    {
+        "host": "http://localhost:8080",    // the web server that your blazegraph is running on
+        "path": "/blazegraph",              // the URL path that points to the blazegraph instance
+        "namespace": "kb",                  // the target namespace you created at step 1)
+        "username": "",                     // optional basic authentication username
+        "password": ""                      // optional basic authentication password
+    }
+    ```
+1. Run in shell: 
+    ```bash
+    $> node upload.js
+    ```

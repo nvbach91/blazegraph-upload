@@ -1,9 +1,17 @@
 /**
- * This tool is used to upload ontology files to blazegraph in N-Quads mode 
- * 1) Create a namespace in blazegraph workbench, choose `quads` mode
- * 2) Prepare a folder of ontology files and fill the path to these files in the items variable
- * 3) Provide upload information, e.g. host, path, namespace, username, password in the uploadConfig variable
- * 4) Run node stream-quad-upload
+ * This tool is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode
+ * It converts the source files to a quad stream, automatically detects inserts the ontology IRI as the 4th value to the quads
+ * 
+ * How to use:
+ * 1) Create a namespace in blazegraph workbench, make sure to choose `quads` mode
+ * 2) Provide the paths of your source files to the `files.json` file
+ * 3) Provide upload information, e.g. host, path, namespace, username, password in the `uploadConfig.json` file
+ *       - host: the web server that your blazegraph is running on
+ *       - path: the URL path that points to the blazegraph instance, e.g. /blazegraph
+ *       - namespace: the target namespace you created in Blazegraph workbench at step 1)
+ *       - username: optional basic authentication username for the web server
+ *       - password: optional basic authentication password for the web server
+ * 4) Run in shell: $> node stream-quad-upload
  */
 
 const Promise = require('bluebird');
@@ -14,39 +22,64 @@ const { namedNode, defaultGraph } = DataFactory;
 const spawn = require('child_process').spawn;
 const stream = require('stream');
 
-const nQuadsToUpload = 45000;
+const nQuadsToUploadPerHttpPost = 45000;
 
-const uploadConfig = {
-  host: 'http://localhost:8080',
-  path: '/blazegraph',
-  namespace: '',
-  username: '',
-  password: '',
+const uploadConfig = require('./uploadConfig.json');
+// Example:
+// {
+//   host: 'http://localhost:8080',
+//   path: '/blazegraph',
+//   namespace: '',
+//   username: '',
+//   password: '',
+// }
+
+const files = require('./files.json');
+// Example:
+// [
+//   './files/cheminf.owl',    // http://semanticchemistry.github.io/semanticchemistry/ontology/cheminf.owl
+//   './files/iao.owl',        // http://purl.obolibrary.org/obo/iao.owl
+//   './files/bao.owl',        // http://www.bioassayontology.org/bao/bao_complete.owl
+//   './files/sio.owl',        // http://semanticscience.org/ontology/sio.owl
+//   './files/obi.owl',        // http://purl.obolibrary.org/obo/obi.owl
+//   './files/clo.owl',        // http://purl.obolibrary.org/obo/clo.owl
+//   './files/go.owl',         // http://purl.obolibrary.org/obo/go.owl
+//   './files/rxnorm.ttl',     // http://purl.bioontology.org/ontology/RXNORM/
+//   './files/chebi.owl',      // http://purl.obolibrary.org/obo/chebi.owl
+//   './files/ncit.owl',       // http://purl.obolibrary.org/obo/ncit.owl
+//   './files/ncbitaxon.ttl',  // http://purl.bioontology.org/ontology/NCBITAXON/
+//   './files/pr.owl',         // http://purl.obolibrary.org/obo/pr.owl
+// ]
+
+const mimeTypes = require('./mimeTypes.json');
+
+const upload = ({ data, extension, host, path, namespace, username, password }) => {
+  const options = {
+    headers: {
+      'Content-Type': mimeTypes[extension],
+      'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
+    }
+  };
+  const url = `${host}${path}/namespace/${namespace}/sparql`;
+  // return Promise.delay(1000);
+  return axios.post(url, data, options);
 };
 
-const items = [
-  { file: './files/cheminf.owl' },// graphIri: 'http://semanticchemistry.github.io/semanticchemistry/ontology/cheminf.owl' },
-  { file: './files/iao.owl' },// graphIri: 'http://purl.obolibrary.org/obo/iao.owl' },
-  { file: './files/bao.owl' },// graphIri: 'http://www.bioassayontology.org/bao/bao_complete.owl' },
-  { file: './files/sio.owl' },// graphIri: 'http://semanticscience.org/ontology/sio.owl' },
-  { file: './files/obi.owl' },// graphIri: 'http://purl.obolibrary.org/obo/obi.owl' },
-  { file: './files/clo.owl' },// graphIri: 'http://purl.obolibrary.org/obo/clo.owl' },
-  { file: './files/go.owl' },// graphIri: 'http://purl.obolibrary.org/obo/go.owl' },
-  { file: './files/rxnorm.ttl' },// graphIri: 'http://purl.bioontology.org/ontology/RXNORM/' },
-  { file: './files/chebi.owl' },// graphIri: 'http://purl.obolibrary.org/obo/chebi.owl' },
-  { file: './files/ncit.owl' },// graphIri: 'http://purl.obolibrary.org/obo/ncit.owl' },
-  { file: './files/ncbitaxon.ttl' },// graphIri: 'http://purl.bioontology.org/ontology/NCBITAXON/' },
-  { file: './files/pr.owl' },// graphIri: 'http://purl.obolibrary.org/obo/pr.owl' },
-];
-
-Promise.each(items, (item) => operate(item)).then(() => {
+console.log('Checking uploadConfig', uploadConfig);
+// checking uploadConfig
+upload({ data: '', extension: 'nq', ...uploadConfig }).then((resp) => {
+  console.log('uploadConfig OK');
+  // return Promise.delay(1000);
+  return Promise.each(files, (file) => operate(file));
+}).then(() => {
   console.log('All files were uploaded');
 }).catch((err) => {
+  console.error('Promise chain has been rejected');
   console.error(err.toString());
 });
 
 
-const operate = ({ file }) => {
+const operate = (file) => {
   console.log('Started processing and uploading', file);
   // let the defaultGraph be the 4th value in the graph, this will be changed 
   // to owl:Ontology instance of the file later when parsing the triples
@@ -75,7 +108,7 @@ const operate = ({ file }) => {
           if (namedNode('http://www.w3.org/2002/07/owl#Ontology').equals(quad.object)) {
             graph = quad.subject;
             // rewrite the quads' 4th value,
-            // WARNING! the triple with <http://www.w3.org/2002/07/owl#Ontology> must be detected within the first load of triples, see variable `nQuadsToUpload`
+            // WARNING! the triple with <http://www.w3.org/2002/07/owl#Ontology> must be detected within the first load of triples, see variable `nQuadsToUploadPerHttpPost`
             // we assume that owl:Ontologies will always have this triple as the first one
             tmpQuads.forEach((q) => q.graph = graph);
           }
@@ -83,7 +116,7 @@ const operate = ({ file }) => {
           tmpQuads.push(quad);
         }
         // when the bucket is full, upload the its content and when it's done, empty the bucket (to save memory) and continue the stream for more quads
-        if (tmpQuads.length >= nQuadsToUpload) {
+        if (tmpQuads.length >= nQuadsToUploadPerHttpPost) {
           uploadQuads(() => {
             nUploadedQuads += tmpQuads.length;
             log('uploaded', tmpQuads.length, 'quads,', 'total processed:', nProcessedQuads, 'quads,', 'total uploaded:', nUploadedQuads, 'quads');
@@ -112,8 +145,9 @@ const operate = ({ file }) => {
     };
 
     cmd.stderr.on('data', (data) => {
-      console.error(file, 'there was an error/warning while converting triples to quad stream', data.toString());
-      reject(data);
+      console.error(file, 'there was an error/warning while converting triples to quad stream');
+      console.error(file, data.toString());
+      // reject(data);
     });
 
     cmd.on('exit', (code) => {
@@ -128,6 +162,7 @@ const operate = ({ file }) => {
         nProcessedQuads += tmpQuads.length;
         upload({ data: result, extension: 'nq', ...uploadConfig }).then(cb).catch((err) => {
           console.error(err.response ? err.response.data : err.toString());
+          // reject(err.response ? err.response.data : err.toString());
         });
       });
     };
@@ -135,34 +170,4 @@ const operate = ({ file }) => {
   }).then(() => {
     log('Finished uploading, total:', nUploadedQuads, 'quads');
   });
-};
-
-const mimeTypes = {
-  'rdf': 'application/rdf+xml',
-  'rdfs': 'application/rdf+xml',
-  'owl': 'application/rdf+xml',
-  'xml': 'application/rdf+xml',
-  'jsonld': 'application/ld+json',
-  'nt': 'text/plain',
-  'ntx': 'application/x-n-triples-RDR',
-  'ttl': 'application/x-turtle',
-  'ttlx': 'application/x-turtle-RDR',
-  'n3': 'text/rdf+n3',
-  'trix': 'application/trix',
-  'trig': 'application/x-trig',
-  'nq': 'text/x-nquads',
-  'srj': 'application/sparql-results+json, application/json',
-  'json': 'application/sparql-results+json, application/json',
-};
-
-const upload = ({ data, extension, host, path, namespace, username, password }) => {
-  const options = {
-    headers: {
-      'Content-Type': mimeTypes[extension],
-      'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
-    }
-  };
-  const url = `${host}${path}/namespace/${namespace}/sparql`;
-  // return Promise.delay(1000);
-  return axios.post(url, data, options);
 };

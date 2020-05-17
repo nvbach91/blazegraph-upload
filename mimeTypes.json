@@ -1,0 +1,17 @@
+{
+    "rdf"   : "application/rdf+xml",
+    "rdfs"  : "application/rdf+xml",
+    "owl"   : "application/rdf+xml",
+    "xml"   : "application/rdf+xml",
+    "jsonld": "application/ld+json",
+    "nt"    : "text/plain",
+    "ntx"   : "application/x-n-triples-RDR",
+    "ttl"   : "application/x-turtle",
+    "ttlx"  : "application/x-turtle-RDR",
+    "n3"    : "text/rdf+n3",
+    "trix"  : "application/trix",
+    "trig"  : "application/x-trig",
+    "nq"    : "text/x-nquads",
+    "srj"   : "application/sparql-results+json, application/json",
+    "json"  : "application/sparql-results+json, application/json"
+}
