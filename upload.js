@@ -27,7 +27,7 @@ if (!directory.endsWith('/')) {
 let files = [];
 try {
     files = fs.readdirSync(directory);
-    files = files.filter((file) => /\.(rdfs?|owl)$/.test(file));
+    files = files.filter((file) => /\.(rdfs?|owl|nq|nt)$/.test(file));
 } catch (e) {
     console.log(e);
     console.log('Invalid path to directory');
@@ -63,6 +63,8 @@ bluebird.map(files, (file) => {
         }
     };
     const data = fs.readFileSync(directory + file, 'utf8');
+    //console.log(options);
+    //console.log(data.length);
     return axios.post(host + path + '/namespace/' + namespace + '/sparql', data, options).then((resp) => {
         console.log('DONE: ', directory + file, resp.data);
     });
