@@ -14,7 +14,7 @@ const { namedNode, defaultGraph } = DataFactory;
 const spawn = require('child_process').spawn;
 const stream = require('stream');
 
-const nQuadsToUpload = 50000;
+const nQuadsToUpload = 45000;
 
 const uploadConfig = {
   host: 'http://localhost:8080',
