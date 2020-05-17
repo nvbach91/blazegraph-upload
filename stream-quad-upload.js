@@ -127,7 +127,7 @@ const operate = ({ file }) => {
       writer.end((error, result) => {
         nProcessedQuads += tmpQuads.length;
         upload({ data: result, extension: 'nq', ...uploadConfig }).then(cb).catch((err) => {
-          console.error(err.response.data);
+          console.error(err.response ? err.response.data : err.toString());
         });
       });
     };
