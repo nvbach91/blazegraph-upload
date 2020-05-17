@@ -63,7 +63,7 @@ const operate = ({ file }) => {
 
     log('converting triples to quad stream');
     // run Jena Riot to convert the source files to nt format
-    const cmd = spawn('riot.bat', [file]);
+    const cmd = spawn(`riot${process.platform.includes('win') ? '.bat' : ''}`, [file]);
     cmd.stdout.pipe(streamParser);
     streamParser.pipe(new SlowConsumer());
 
