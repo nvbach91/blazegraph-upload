@@ -1,17 +1,9 @@
 /**
- * This tool is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode
- * It converts the source files to a quad stream, automatically detects inserts the ontology IRI as the 4th value to the quads
+ * This tool is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode.
+ * It converts the source files to a quad stream, automatically detects inserts the ontology IRI as
+ * the 4th value to the quads and uploads the content to Blazegraph via its HTTP REST API in chunks
  * 
- * How to use:
- * 1) Create a namespace in blazegraph workbench, make sure to choose `quads` mode
- * 2) Provide the paths of your source files to the `files.json` file
- * 3) Provide upload information, e.g. host, path, namespace, username, password in the `uploadConfig.json` file
- *       - host: the web server that your blazegraph is running on
- *       - path: the URL path that points to the blazegraph instance, e.g. /blazegraph
- *       - namespace: the target namespace you created in Blazegraph workbench at step 1)
- *       - username: optional basic authentication username for the web server
- *       - password: optional basic authentication password for the web server
- * 4) Run in shell: $> node stream-quad-upload
+ * How to use: see README.md
  */
 
 const Promise = require('bluebird');
@@ -24,7 +16,7 @@ const stream = require('stream');
 
 const nQuadsToUploadPerHttpPost = 45000;
 
-const uploadConfig = require('./uploadConfig.json');
+const uploadConfig = require('./config/upload-config.json');
 // Example:
 // {
 //   host: 'http://localhost:8080',
@@ -34,7 +26,7 @@ const uploadConfig = require('./uploadConfig.json');
 //   password: '',
 // }
 
-const files = require('./files.json');
+const files = require('./config/files.json');
 // Example:
 // [
 //   './files/cheminf.owl',    // http://semanticchemistry.github.io/semanticchemistry/ontology/cheminf.owl
@@ -51,7 +43,7 @@ const files = require('./files.json');
 //   './files/pr.owl',         // http://purl.obolibrary.org/obo/pr.owl
 // ]
 
-const mimeTypes = require('./mimeTypes.json');
+const mimeTypes = require('./config/mime-types.json');
 
 const upload = ({ data, extension, host, path, namespace, username, password }) => {
   const options = {
@@ -65,10 +57,9 @@ const upload = ({ data, extension, host, path, namespace, username, password }) 
   return axios.post(url, data, options);
 };
 
-console.log('Checking uploadConfig', uploadConfig);
-// checking uploadConfig
+console.log('Checking upload config', uploadConfig);
 upload({ data: '', extension: 'nq', ...uploadConfig }).then((resp) => {
-  console.log('uploadConfig OK');
+  console.log('upload-config OK');
   // return Promise.delay(1000);
   return Promise.each(files, (file) => operate(file));
 }).then(() => {
