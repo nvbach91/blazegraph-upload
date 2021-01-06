@@ -1,4 +1,5 @@
 {
+    "orig"  : "application/rdf+xml",
     "rdf"   : "application/rdf+xml",
     "rdfs"  : "application/rdf+xml",
     "owl"   : "application/rdf+xml",

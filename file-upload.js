@@ -31,14 +31,16 @@ axios.post(url, '', axiosOptions).then((resp) => {
     const data = fs.readFileSync(file, 'utf8');
     // return Promise.delay(1000);
     return axios.post(url, data, axiosOptions).then((resp) => {
-      console.log('DONE: ', file, resp.data);
+      console.log('DONE: ', file);//, resp.data);
+    }).catch((e) => {
+      console.log('FAIL: ', file);
     });
   });
 }).then(() => {
   console.log('Finished after ', new Date() - start, 'ms');
 }).catch((err) => {
   if (err.response) {
-    console.error(err.response.status, err.response.statusText, err.response.data);
+    console.error(err.response.status, err.response.statusText);//, err.response.data);
   } else {
     console.error(err);
   }
