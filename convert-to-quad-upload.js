@@ -26,7 +26,7 @@ const uploadConfig = require('./config/upload-config.json');
 //   password: '',
 // }
 
-const files = require('./config/files.json');
+const files = require('./config/files.js');
 // Example:
 // [
 //   './files/cheminf.owl',    // http://semanticchemistry.github.io/semanticchemistry/ontology/cheminf.owl
