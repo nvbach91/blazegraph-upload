@@ -11,7 +11,7 @@ const fs = require('fs');
 
 const mimeTypes = require('./config/mime-types.json');
 const uploadConfig = require('./config/upload-config.json');
-const files = require('./config/files.json');
+const files = require('./config/files.js');
 
 const { host, path, namespace, username, password } = uploadConfig;
 const url = `${host}${path}/namespace/${namespace}/sparql`;
@@ -26,7 +26,7 @@ console.log('Checking upload config', uploadConfig);
 const start = new Date();
 axios.post(url, '', axiosOptions).then((resp) => {
   console.log('upload config OK');
-  return Promise.each(files, (file) => {
+  const postData = (file) => {
     axiosOptions.headers['Content-Type'] = mimeTypes[file.split('.').splice(-1).join()];
     const data = fs.readFileSync(file, 'utf8');
     // return Promise.delay(1000);
@@ -35,6 +35,14 @@ axios.post(url, '', axiosOptions).then((resp) => {
     }).catch((e) => {
       console.log('FAIL: ', file);
     });
+  }
+  return Promise.each(files, (file) => {
+    if (file.endsWith('/')) {
+      return Promise.each(fs.readdirSync(file).map((f) => `${file}${f}`), (f) => {
+        return postData(f);
+      });
+    }
+    postData(file);
   });
 }).then(() => {
   console.log('Finished after ', new Date() - start, 'ms');

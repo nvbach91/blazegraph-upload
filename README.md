@@ -43,7 +43,7 @@ Usage:
 1. Provide the paths of your source files to the `files.json` file
     ```js
     [
-        "/path/to/your/files/file.owl"
+        "/path/to/your/files/or/folder/file.owl"
     ]
     ```
 1. Provide upload information, e.g. `host`, `path`, `namespace`, `username`, `password` in the `upload-config.json` file
@@ -69,7 +69,7 @@ This is used to upload RDF files one by one to a Blazegraph instance in triples 
 1. Provide the paths of your source files to the `files.json` file
     ```js
     [
-        "/path/to/your/files/file.owl"
+        "/path/to/your/files//or/folder/file.owl"
     ]
     ```
 1. Provide upload information, e.g. `host`, `path`, `namespace`, `username`, `password` in the `upload-config.json` file

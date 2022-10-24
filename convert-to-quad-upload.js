@@ -6,6 +6,7 @@
  * How to use: see README.md
  */
 
+const fs = require('fs');
 const Promise = require('bluebird');
 const axios = require('axios');
 const N3 = require('n3');
@@ -61,7 +62,14 @@ console.log('Checking upload config', uploadConfig);
 upload({ data: '', extension: 'nq', ...uploadConfig }).then((resp) => {
   console.log('upload-config OK');
   // return Promise.delay(1000);
-  return Promise.each(files, (file) => operate(file));
+  return Promise.each(files, (file) => {
+    if (file.endsWith('/')) {
+      return Promise.each(fs.readdirSync(file).map((f) => `${file}${f}`), (f) => {
+        return operate(f);
+      });
+    }
+    return operate(file);
+  });
 }).then(() => {
   console.log('All files were uploaded');
 }).catch((err) => {
