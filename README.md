@@ -1,5 +1,5 @@
 # Blazegraph upload
-Use these node.js scripts to bulk upload RDF files to Blazegraph in triples or quads mode via HTTP
+Use these node.js scripts to bulk upload RDF files to Blazegraph in triples or quads mode via HTTP REST API
 
 How to use:
 1. Clone this repo
