@@ -85,7 +85,7 @@ const operate = (file) => {
     let tmpQuads = [];
     const streamParser = new N3.StreamParser({ blankNodePrefix: '' });
 
-    log('converting triples to quad stream');
+    log('converting triples to quad stream, if this failes, please check README regarding the Apache Jena Riot');
     // run Jena Riot to convert the source files to nt format
     const cmd = spawn(`riot${process.platform.includes('win') ? '.bat' : ''}`, [file]);
     cmd.stdout.pipe(streamParser);

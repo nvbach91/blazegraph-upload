@@ -35,6 +35,8 @@ This is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode. 
 - download `Apache Jena` archive, extract it to a folder, 
 - set the environment variable `JENA_HOME` to that folder,
 - add the `bin` (unix) or `bat` (win) directory to the `PATH` environment variable
+  - `export JENA_HOME=/home/nguv03/utilities/apache-jena-3.14.0/`
+  - `export PATH=$PATH:$JENA_HOME/bin`
 
 Usage:
 1. Create a namespace in Blazegraph workbench or using `create-namespace.js`, make sure to choose `quads` mode
