@@ -1,8 +1,8 @@
 node_modules/
-files/*.rdf
-files/*.owl
-files/*.ttl
-files/*.nq
-files/*.xml
-files/*.n3
+files/**/*.rdf
+files/**/*.owl
+files/**/*.ttl
+files/**/*.nq
+files/**/*.xml
+files/**/*.n3
 
