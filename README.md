@@ -43,7 +43,7 @@ This is used to bulk upload LARGE ontology files to blazegraph in N-Quads mode. 
 
 Usage:
 - Create a namespace in Blazegraph workbench or using `create-namespace.js`, make sure to choose `quads` mode
-- Provide the paths of your source files to the `files.json` file
+- Provide the paths of your source files to the `./config/files.json` file
     ```js
     [
         "/path/to/your/files/or/folder/file.owl"
@@ -59,7 +59,7 @@ Usage:
 This is used to upload RDF files one by one to a Blazegraph instance in triples mode.
 
 - Create a namespace in Blazegraph workbench or using `create-namespace.js`, make sure to choose `triples` mode
-- Provide the paths of your source files to the `files.json` file
+- Provide the paths of your source files to the `./config/files.js` file
     ```js
     [
         "/path/to/your/files//or/folder/file.owl"
